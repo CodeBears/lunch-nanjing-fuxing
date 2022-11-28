@@ -1,21 +1,27 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+  <DrawLunch />
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import HelloWorld from "./components/HelloWorld.vue";
+import DrawLunch from "./components/DrawLunch.vue";
 
 @Options({
   components: {
-    HelloWorld,
+    DrawLunch,
   },
 })
 export default class App extends Vue {}
 </script>
 
 <style lang="scss">
+:root {
+  --slice-height: 100px;
+  --background: #f00;
+}
+body {
+  background-color: #eea9a9;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
