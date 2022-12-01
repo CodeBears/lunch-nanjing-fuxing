@@ -1,8 +1,13 @@
 <template>
+  <div class="header">
+    <a href="https://github.com/CodeBears/lunch-nanjing-fuxing" target="_blank">
+      <i class="fa-brands fa-github fa-2xl"></i>
+    </a>
+  </div>
   <div class="container">
     <h1>吃午餐</h1>
     <div class="board">
-      <button id="spin">Spin</button>
+      <button id="spin">抽</button>
       <div class="triangle" />
       <div class="spinner-table">
         <div class="dial">
@@ -42,21 +47,25 @@ if (choices.length % 2 != 0) {
 const numberOfSlices = choices.length;
 const circumfrance = (6.283185307 * 350) / 2;
 const sliceHeight = circumfrance / numberOfSlices;
+let transformDegree = 0;
+const sliceDegree = 360 / numberOfSlices;
 
-onMounted(() => {
-  const slices = [...document.querySelectorAll(".slice")];
-  const labels = [...document.querySelectorAll(".label")];
-  let transformDegree = 0;
-  const sliceDegree = 360 / numberOfSlices;
+const setSliceStyle = (slices) => {
   slices.forEach((slice) => {
     slice.style.transform = `rotate(${transformDegree}deg)`;
     transformDegree += sliceDegree;
     slice.style.height = `${sliceHeight}px`;
     slice.style.top = `calc(50% - ${sliceHeight / 2}px)`;
   });
+};
+
+const setLabelStyle = (labels) => {
   labels.forEach((label) => {
     label.style.lineHeight = `${sliceHeight}px`;
   });
+};
+
+onMounted(() => {
   let addRule = (function (style) {
     let sheet = document.head.appendChild(style).sheet;
     return function (selector, css) {
@@ -75,6 +84,12 @@ onMounted(() => {
   addRule(".slice:after", {
     "border-width": `0 175px ${sliceBoardBottom}px 0`,
   });
+
+  const slices = [...document.querySelectorAll(".slice")];
+  const labels = [...document.querySelectorAll(".label")];
+  setSliceStyle(slices);
+  setLabelStyle(labels);
+
   let rotation = 0;
   const spinButton = document.getElementById("spin");
   spinButton.addEventListener("click", () => {
@@ -82,7 +97,6 @@ onMounted(() => {
     document.querySelector(".dial").style.transform = `rotate(${rotation}deg)`;
   });
 });
-// const slices = document.getElementByClassName("slice");
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -110,6 +124,7 @@ $sliceColor: #d05a6e;
 .dial {
   height: 100%;
   transition: all 3s ease-out;
+  letter-spacing: 2px;
   animation-fill-mode: forwards;
   animation-timing-function: linear;
 
@@ -221,5 +236,15 @@ button {
   border-style: solid;
   border-width: 50px 17.5px 0 17.5px;
   border-color: #f8c3cd transparent transparent transparent;
+}
+.fa-github {
+  color: #d05a6e;
+  &:hover {
+    cursor: pointer;
+    color: #b5495b;
+  }
+}
+.header {
+  text-align: right;
 }
 </style>
