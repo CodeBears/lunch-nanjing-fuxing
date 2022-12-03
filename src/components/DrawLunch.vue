@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { CSSProperties, onMounted } from "vue";
 
 const choices = [
   "柒",
@@ -41,25 +41,28 @@ const choices = [
   "江梅麵館",
   "速食",
 ];
+
 if (choices.length % 2 != 0) {
   choices.push("踩雷");
 }
-const numberOfSlices = choices.length;
-const circumfrance = (6.283185307 * 350) / 2;
-const sliceHeight = circumfrance / numberOfSlices;
-let transformDegree = 0;
-const sliceDegree = 360 / numberOfSlices;
 
-const setSliceStyle = (slices) => {
+const numberOfSlices = choices.length;
+const circumference = (6.283185307 * 360) / 2;
+const sliceHeight = circumference / numberOfSlices;
+const sliceDegree = 360 / numberOfSlices;
+let transformDegree = 0;
+
+const setSliceStyle = (slices: HTMLDivElement[]) => {
   slices.forEach((slice) => {
-    slice.style.transform = `rotate(${transformDegree}deg)`;
     transformDegree += sliceDegree;
+
+    slice.style.transform = `rotate(${transformDegree}deg)`;
     slice.style.height = `${sliceHeight}px`;
     slice.style.top = `calc(50% - ${sliceHeight / 2}px)`;
   });
 };
 
-const setLabelStyle = (labels) => {
+const setLabelStyle = (labels: HTMLDivElement[]) => {
   labels.forEach((label) => {
     label.style.lineHeight = `${sliceHeight}px`;
   });
@@ -68,71 +71,79 @@ const setLabelStyle = (labels) => {
 onMounted(() => {
   let addRule = (function (style) {
     let sheet = document.head.appendChild(style).sheet;
-    return function (selector, css) {
-      var propText = Object.keys(css)
-        .map(function (p) {
-          return p + ":" + css[p];
+    return function (selector: string, css: Partial<CSSProperties>) {
+      let propText = Object.entries(css)
+        .map(function ([cssKey, cssValue]) {
+          return cssKey + ":" + cssValue;
         })
         .join(";");
-      sheet.insertRule(selector + "{" + propText + "}", sheet.cssRules.length);
+      sheet?.insertRule(selector + "{" + propText + "}", sheet.cssRules.length);
     };
   })(document.createElement("style"));
+
   const sliceBoardBottom = sliceHeight / 2 + 4;
   addRule(".slice:before", {
     "border-width": `0 0 ${sliceBoardBottom}px 175px`,
   });
+
   addRule(".slice:after", {
     "border-width": `0 175px ${sliceBoardBottom}px 0`,
   });
 
-  const slices = [...document.querySelectorAll(".slice")];
-  const labels = [...document.querySelectorAll(".label")];
+  const slices = [...document.querySelectorAll(".slice")] as HTMLDivElement[];
+  const labels = [...document.querySelectorAll(".label")] as HTMLDivElement[];
   setSliceStyle(slices);
   setLabelStyle(labels);
 
   let rotation = 0;
-  const spinButton = document.getElementById("spin");
+  const spinButton = document.getElementById("spin") as HTMLButtonElement;
   spinButton.addEventListener("click", () => {
     rotation += Math.floor(720 + Math.random() * 359);
-    document.querySelector(".dial").style.transform = `rotate(${rotation}deg)`;
+
+    const dial = document.querySelector(".dial") as HTMLDivElement;
+    if (dial) {
+      dial.style.transform = `rotate(${rotation}deg)`;
+    }
   });
 });
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+$diameter: 350px;
+$radius: ($diameter / 2);
+$sliceColor: #d05a6e;
+
+:root {
+  --primary-color: #333;
+}
 .container {
   max-width: 800px;
   margin: 2rem auto;
   background-color: #eea9a9;
 }
 
-$diameter: 350px;
-$radius: ($diameter / 2);
-$sliceColor: #d05a6e;
-
 .spinner-table {
-  height: ($diameter - 2px);
   width: ($diameter - 2px);
+  height: ($diameter - 2px);
   position: relative;
   border-radius: 100%;
   overflow: hidden;
-}
-:root {
-  --primary-color: #333;
+  -webkit-transform-style: preserve-3d; /* Opera, Chrome, and Safari */
 }
 .dial {
   height: 100%;
   transition: all 3s ease-out;
   letter-spacing: 2px;
-  animation-fill-mode: forwards;
-  animation-timing-function: linear;
+  overflow: hidden;
+  // animation-fill-mode: forwards;
+  // animation-timing-function: linear;
 
-  &.spinning {
-    animation-duration: 3s;
-    animation-timing-function: cubic-bezier(0.44, -0.205, 0, 1.13);
-    animation-name: spinning;
-  }
+  // &.spinning {
+  //   animation-duration: 3s;
+  //   animation-timing-function: cubic-bezier(0.44, -0.205, 0, 1.13);
+  //   animation-name: spinning;
+  // }
 
   &:before {
     content: "";
@@ -153,8 +164,8 @@ $sliceColor: #d05a6e;
   }
 
   .slice {
-    z-index: 150;
     position: absolute;
+    z-index: 150;
     left: 50%;
     width: 50%;
     color: white;
@@ -162,6 +173,7 @@ $sliceColor: #d05a6e;
     padding-right: 10px;
     display: block;
     transform-origin: left center;
+    overflow: hidden;
 
     &:before,
     &:after {
