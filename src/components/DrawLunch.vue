@@ -136,14 +136,6 @@ $sliceColor: #d05a6e;
   transition: all 3s ease-out;
   letter-spacing: 2px;
   overflow: hidden;
-  // animation-fill-mode: forwards;
-  // animation-timing-function: linear;
-
-  // &.spinning {
-  //   animation-duration: 3s;
-  //   animation-timing-function: cubic-bezier(0.44, -0.205, 0, 1.13);
-  //   animation-name: spinning;
-  // }
 
   &:before {
     content: "";
